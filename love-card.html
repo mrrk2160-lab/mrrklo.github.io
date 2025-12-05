@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Love Card</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff4d6d;--soft:#ffecec}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:
+      radial-gradient(1200px 800px at 10% 10%, rgba(255,77,109,0.06), transparent 5%),
+      radial-gradient(900px 600px at 90% 90%, rgba(0,162,255,0.04), transparent 5%),
+      var(--bg);color:var(--soft)}
+    .card{width:360px;padding:28px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),var(--card);box-shadow:0 10px 30px rgba(2,6,23,0.6);text-align:center}
+    .heart{width:120px;height:120px;margin:0 auto 14px;position:relative;transform:scale(1);animation:pulse 1.6s ease-in-out infinite}
+    .heart::before,.heart::after{content:"";position:absolute;width:70px;height:110px;background:var(--accent);border-radius:70px 70px 0 0;top:0;left:25px;transform:rotate(-45deg);transform-origin:0 100%}
+    .heart::after{left:auto;right:25px;transform:rotate(45deg);transform-origin:100% 100%}
+    @keyframes pulse{0%{transform:scale(0.98)}50%{transform:scale(1.06)}100%{transform:scale(0.98)}}
+    h1{margin:6px 0 2px;font-size:20px;letter-spacing:0.4px}
+    p.lead{color:rgba(255,255,255,0.8);margin:0 0 18px;font-size:14px}
+    button{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:10px;color:var(--soft);cursor:pointer}
+    button:active{transform:translateY(1px)}
+    textarea{width:100%;height:120px;margin-top:12px;border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--soft);resize:vertical}
+    footer{margin-top:10px;font-size:12px;color:rgba(255,255,255,0.45)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="heart" aria-hidden="true"></div>
+    <h1>Love Card</h1>
+    <p class="lead">Click the button to generate a sweet, original love poem — add names to personalize it.</p>
+
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px">
+      <input id="nameA" placeholder="Your name" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
+      <input id="nameB" placeholder="Their name" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button id="poemBtn">Generate Poem ❤️</button>
+      <button id="calcBtn">Love Calculator</button>
+    </div>
+
+    <textarea id="output" readonly placeholder="Your poem or result will appear here..."></textarea>
+    <footer>Made with code & a little ❤️</footer>
+  </div>
+
+  <script>
+    const poems = [
+      (a,b)=>`${a}, you are the sunrise stirring my calm. ${b}, with you the ordinary hums like a string of soft light.`,
+      (a,b)=>`When ${a} walks into a room, the air remembers to smile. ${b}, you are the echo that keeps it warm.`,
+      (a,b)=>`I count small miracles — the days, your laugh, ${a}'s quiet courage. ${b}, my favorite miracle is finding you.`,
+      (a,b)=>`Between one heartbeat and the next, I choose ${b}. Between every silence, I choose ${a}. Together, we are home.`,
+      (a,b)=>`${a} + ${b} — a tiny constellation, reckless and bright, turning normal nights into stories worth telling.`
+    ];
+
+    function randomPoem(a,b){
+      const tmpl = poems[Math.floor(Math.random()*poems.length)];
+      return tmpl(a||"You", b||"Beloved");
+    }
+
+    document.getElementById('poemBtn').onclick = () => {
+      const a = document.getElementById('nameA').value.trim();
+      const b = document.getElementById('nameB').value.trim();
+      const poem = randomPoem(a,b);
+      document.getElementById('output').value = poem;
+    };
+
+    document.getElementById('calcBtn').onclick = () => {
+      const a = document.getElementById('nameA').value.trim() || "You";
+      const b = document.getElementById('nameB').value.trim() || "Them";
+      const score = loveScore(a,b);
+      const verdict = score > 80 ? "Cosmic match ✨" : score > 50 ? "Promising 💫" : score > 30 ? "Warm spark 🔥" : "Sweet & playful 🌱";
+      document.getElementById('output').value = `${a} + ${b} = ${score}%\n${verdict}\n\nTry generating a poem next!`;
+    };
+
+    // deterministic-ish small love calculator based on names
+    function loveScore(a,b){
+      const s = (a + b).toLowerCase();
+      let sum = 0;
+      for(let i=0;i<s.length;i++){ sum += s.charCodeAt(i); }
+      // scale to 0-100
+      return (sum % 101);
+    }
+  </script>
+</body>
+</html>
